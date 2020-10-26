@@ -36,6 +36,15 @@ red = redis.from_url(redis_url)
 @sio.on('download')
 def download(sid, data):
     print(data['url'], '->', data['dest'])
+    dl_queue = red.get('dl_queue')
+
+    if dl_queue:
+        dl_queue = json.loads(dl_queue)
+        dl_queue.append(data)
+    else:
+        dl_queue = [data]
+
+    red.set('dl_queue', json.dumps(dl_queue))
 
 
 # ---------------------------------------------------------------------------------------------------- MAIN
